@@ -1,1 +1,24 @@
-
+version: '2'
+volumes:
+  vol_nginx:
+    external: true
+    driver: rancher-nfs
+services:
+  nginxlb:
+    image: rancher/lb-service-haproxy:v0.7.15
+    ports:
+    - 80:80/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin,agent
+      io.rancher.container.agent_service.drain_provider: 'true'
+      io.rancher.container.create_agent: 'true'
+  mynginx:
+    image: nginx
+    stdin_open: true
+    volumes:
+    - vol_oito:/usr/share/nginx/html
+    tty: true
+    labels:
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
